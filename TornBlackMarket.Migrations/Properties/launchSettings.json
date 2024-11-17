@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TornBlackMarket.Migrations": {
+      "commandName": "Project",
+      "commandLineArgs": "database=TornBlackMarketDev"
+    }
+  }
+}
