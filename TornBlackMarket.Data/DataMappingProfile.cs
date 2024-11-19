@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using TornBlackMarket.Common.DTO.Domain;
+using TornBlackMarket.Data.Models;
 
 namespace TornBlackMarket.Data
 {
@@ -7,8 +8,9 @@ namespace TornBlackMarket.Data
     {
         public DataMappingProfile()
         {
-            CreateMap<UserProfileDocumentDTO, Models.UserProfileDocument>().ReverseMap();
+            CreateMap<UserProfileDocumentDTO, UserProfileDocument>().ReverseMap();
             CreateMap<UserProfileDocumentDTO, UserInfoDTO>();
+            CreateMap<UserProfileDocument, UserInfoDTO>();
             CreateMap<ItemDocumentDTO, Models.ItemDocument>().ReverseMap();
         }
     }

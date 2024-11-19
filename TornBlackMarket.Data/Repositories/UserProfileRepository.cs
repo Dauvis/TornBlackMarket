@@ -9,6 +9,8 @@ using Microsoft.Data.SqlClient;
 using TornBlackMarket.Common.DTO.Domain;
 using Dapper;
 using static Dapper.SqlMapper;
+using System.Text.Json;
+using Dapper.Contrib.Extensions;
 
 namespace TornBlackMarket.Data.Repositories
 {
@@ -24,20 +26,17 @@ namespace TornBlackMarket.Data.Repositories
         {
             try
             {
-                Logger.LogDebug("Inserting {TableName} record:", nameof(UserProfileDocument));
-                Logger.LogDebug("  Id = {Id}, ApiKey = {ApiKey}, Name = {Name}",
-                    userInfoDto.Id, apiKey, userInfoDto.Name);
-
-                var sql = "INSERT INTO UserProfileDocument (Id, ApiKey, Name) VALUES (@Id, @ApiKey, @Name);";
-                int ret = await Connection.ExecuteAsync(sql, new { userInfoDto.Id, ApiKey = apiKey, userInfoDto.Name });
-
-                if (ret != 0)
+                var document = new UserProfileDocument()
                 {
-                    return await GetAsync(userInfoDto.Id);
-                }
+                    Id = userInfoDto.Id,
+                    Name = userInfoDto.Name,
+                    ApiKey = apiKey
+                };
 
-                Logger.LogDebug("Failed to create {TableName} record: reason unknown", nameof(UserProfileDocument));
-                return null;
+                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(UserProfileDocument), JsonSerializer.Serialize(document));
+                var ret = await Connection.InsertAsync<UserProfileDocument>(document);
+
+                return await GetAsync(userInfoDto.Id);
             }
             catch (Exception e)
             {
@@ -51,9 +50,7 @@ namespace TornBlackMarket.Data.Repositories
             try
             {
                 Logger.LogDebug("Fetching {TableName} for {UserId}", nameof(UserProfileDocument), userId);
-                var sql = "SELECT * FROM UserProfileDocument WHERE Id = @Id;";
-                var profile = await Connection.QuerySingleOrDefaultAsync<UserProfileDocument>(sql, new { Id = userId });
-
+                var profile = await Connection.GetAsync<UserProfileDocument>(userId);
                 return Mapper.Map<UserProfileDocumentDTO>(profile);
             }
             catch (Exception e)
@@ -65,27 +62,20 @@ namespace TornBlackMarket.Data.Repositories
 
         public async Task<UserInfoDTO?> GetUserAsync(string userId)
         {
-            Logger.LogDebug("Fetching {TableName} for {UserId} as a {TargetType}", nameof(UserProfileDocument), userId, nameof(UserInfoDTO));
-            var profile = await GetAsync(userId);
-
+            Logger.LogDebug("Fetching {TableName} for {UserId}", nameof(UserProfileDocument), userId);
+            var profile = await Connection.GetAsync<UserProfileDocument>(userId);
             return Mapper.Map<UserInfoDTO>(profile);
         }
 
-        public async Task<bool> UpdateAsync(UserProfileDocumentDTO profile)
+        public async Task<bool> UpdateAsync(UserProfileDocumentDTO profileDto)
         {
             try
             {
-                Logger.LogDebug("Updating {TableName} record:", nameof(UserProfileDocument));
-                Logger.LogDebug("  Id = {Id}, ApiKey = {ApiKey}, Name = {Name}",
-                    profile.Id, profile.ApiKey, profile.Name);
+                var document = Mapper.Map<UserProfileDocument>(profileDto);
+                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(UserProfileDocument), JsonSerializer.Serialize(document));
+                var ret = await Connection.UpdateAsync<UserProfileDocument>(document);
 
-                var sql = @"UPDATE UserProfileDocument 
-                    SET Name = @Name, ApiKey = @ApiKey
-                    WHERE Id = @Id";
-
-                int ret = await Connection.ExecuteAsync(sql, new { profile.Id, profile.ApiKey, profile.Name });
-
-                return ret > 0;
+                return ret;
             }
             catch (Exception e)
             {
