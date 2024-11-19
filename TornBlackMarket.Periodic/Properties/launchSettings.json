@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TornBlackMarket.Periodic": {
+      "commandName": "Project",
+      "commandLineArgs": "job=ItemLoad key=x9rfU0K8h0SyYCBb"
+    }
+  }
+}

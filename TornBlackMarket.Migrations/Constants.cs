@@ -9,5 +9,6 @@ namespace TornBlackMarket.Migrations
     internal static class Constants
     {
         public const string UserProfileDocument = "UserProfileDocument";
+        public const string Items = "Items";
     }
 }

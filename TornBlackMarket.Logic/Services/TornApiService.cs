@@ -11,8 +11,10 @@ namespace TornBlackMarket.Logic.Services
     public class TornApiService : ITornApiService
     {
         const string _userEndpoint = "user";
+        const string _tornEndpoint = "torn";
         const string _basicSelection = "basic";
         const string _bazaarSelection = "bazaar";
+        const string _itemsSelection = "items";
 
         private readonly string _v2BaseUri;
 
@@ -43,6 +45,12 @@ namespace TornBlackMarket.Logic.Services
         {
             var url = GetV2ApiUrl(apiKey, _userEndpoint, [_basicSelection]);
             return await CallTornApiAsync<TornPlayerDTO>(url);
+        }
+
+        public async Task<TornItemsDTO?> GetItemsAsync(string apiKey)
+        {
+            var url = GetV2ApiUrl(apiKey, _tornEndpoint, [_itemsSelection]);
+            return await CallTornApiAsync<TornItemsDTO>(url);
         }
 
         private async Task<T?> CallTornApiAsync<T>(string url) where T : class

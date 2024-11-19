@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace TornBlackMarket.Server
+namespace TornBlackMarket.Common
 {
     public static class ServiceCollectionExtensions
     {

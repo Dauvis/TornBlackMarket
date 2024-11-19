@@ -8,6 +8,7 @@ using Serilog;
 using TornBlackMarket.Data;
 using TornBlackMarket.Logic;
 using System.Text;
+using TornBlackMarket.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -2,7 +2,7 @@
 using TornBlackMarket.Common.Interfaces;
 using TornBlackMarket.Security;
 
-namespace TornBlackMarket.Server
+namespace TornBlackMarket.Security
 {
     public static class ServiceCollectionExtensions
     {

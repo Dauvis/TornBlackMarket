@@ -9,6 +9,7 @@ namespace TornBlackMarket.Data
         {
             CreateMap<UserProfileDocumentDTO, Models.UserProfileDocument>().ReverseMap();
             CreateMap<UserProfileDocumentDTO, UserInfoDTO>();
+            CreateMap<ItemDocumentDTO, Models.ItemDocument>().ReverseMap();
         }
     }
 }

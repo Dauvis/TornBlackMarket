@@ -70,6 +70,7 @@ namespace TornBlackMarket.Data
         {
             _logger.LogDebug("Constructing repository interface to implementation mappings");
             _repositoryImplementationMap[typeof(IUserProfileRepository)] = typeof(UserProfileRepository);
+            _repositoryImplementationMap[typeof(IItemRepository)] = typeof(ItemRepository);
         }
     }
 }

@@ -12,34 +12,42 @@ namespace TornBlackMarket.Migrations
 
             foreach (var argument in args)
             {
-                var parse = argument.ToLower().Split('=');
+                int index = argument.IndexOf('=');
 
-                if (parse.Length > 1)
+                if (index >= 0)
                 {
-                    switch (parse[0])
+                    string parameter = argument[..index];
+                    string value = argument[(index + 1)..];
+
+                    switch (parameter)
                     {
                         case "connect":
-                            connectionString = parse[1];
+                            connectionString = value;
                             break;
 
                         case "database":
-                            connectionString = ConnectionStringFromDatabase(configuration, parse[1]);
+                            connectionString = ConnectionStringFromDatabase(configuration, value);
                             break;
 
                         case "downgrade":
-                            bool success = long.TryParse(parse[1], out downgradeVersion);
+                            bool success = long.TryParse(value, out downgradeVersion);
 
                             if (!success)
                             {
-                                Log.Fatal("Invalid downgrade version specified: {DowngradeVersion} could not be converted to an long integer.", parse[1]);
+                                Log.Fatal("Invalid downgrade version specified: {DowngradeVersion} could not be converted to an long integer.", value);
                                 throw new ArgumentException("Invalid downgrade version");
                             }
                             break;
 
                         default:
-                            Log.Fatal("Unknown command line parameter {Parameter}. Please use 'connect', 'database', or 'downgrade'", parse[0]);
+                            Log.Fatal("Unknown command line parameter {Parameter}. Please use 'connect', 'database', or 'downgrade'", parameter);
                             throw new ArgumentException($"Unknown command line parameter");
                     }
+                }
+                else
+                {
+                    Log.Fatal("Unknown command line argument {Parameter}. Please format as 'parameter=value'.", argument);
+                    throw new ArgumentException($"Unknown command line argument");
                 }
             }
 
