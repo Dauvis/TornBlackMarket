@@ -37,7 +37,7 @@ static IServiceProvider CreateServices(string connectionString)
         .ConfigureRunner(rb => rb
             .AddSqlServer()
             .WithGlobalConnectionString(connectionString)
-            .ScanIn(typeof(Program).Assembly).For.Migrations())
+            .ScanIn(typeof(MigrationUtil).Assembly).For.Migrations())
         .AddLogging(lb => lb.AddFluentMigratorConsole())
         .BuildServiceProvider(false);
 }

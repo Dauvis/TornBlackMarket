@@ -4,7 +4,7 @@ using Serilog;
 
 namespace TornBlackMarket.Migrations
 {
-    internal class MigrationUtil
+    public class MigrationUtil
     {
         public static void UpgradeDatabase(IServiceProvider serviceProvider)
         {
