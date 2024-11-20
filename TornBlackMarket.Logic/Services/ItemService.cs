@@ -1,13 +1,12 @@
 ﻿using TornBlackMarket.Common.DTO.Domain;
 using TornBlackMarket.Common.Interfaces;
-using TornBlackMarket.Data.Repositories;
 
 namespace TornBlackMarket.Logic.Services
 {
     public class ItemService : IItemService
     {
         private readonly IRepositoryFactory _repositoryFactory;
-        private IItemRepository _itemRepository;
+        private IItemRepository? _itemRepository;
 
         public ItemService(IRepositoryFactory repositoryFactory)
         {

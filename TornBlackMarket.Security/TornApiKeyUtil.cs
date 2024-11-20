@@ -13,7 +13,7 @@ namespace TornBlackMarket.Security
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly ITornApiService _tornApiService;
         private readonly ILogger<TornApiKeyUtil> _logger;
-        private IUserProfileRepository? _profileRepository;
+        private IProfileRepository? _profileRepository;
 
         public TornApiKeyUtil(IConfiguration configuration, IMapper mapper, IRepositoryFactory repositoryFactory, 
             ITornApiService tornApiService, ILogger<TornApiKeyUtil> logger)
@@ -25,7 +25,7 @@ namespace TornBlackMarket.Security
             _logger = logger;
         }
 
-        public async Task<UserProfileDocumentDTO?> ProfileDocumentForApiKeyAsync(string? apiKey)
+        public async Task<ProfileDocumentDTO?> ProfileDocumentForApiKeyAsync(string? apiKey)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
             {
@@ -52,13 +52,13 @@ namespace TornBlackMarket.Security
 
                 if (profile is null)
                 {
-                    var userInfoDto = new UserInfoDTO()
+                    var newProfileDto = new ProfileDocumentDTO()
                     {
                         Id = userBasic.PlayerId.ToString(),
                         Name = userBasic.Name ?? ""
                     };
 
-                    profile = await repository.CreateAsync(userInfoDto, apiKey);
+                    profile = await repository.CreateAsync(newProfileDto, apiKey);
                 }
 
                 // name or ApiKey changed, update the profile
@@ -69,21 +69,21 @@ namespace TornBlackMarket.Security
                     await repository.UpdateAsync(profile);
                 }
 
-                return _mapper.Map<UserProfileDocumentDTO>(profile);
+                return _mapper.Map<ProfileDocumentDTO>(profile);
             }
 
             _logger.LogError("Torn API response lacks critical data (player_id)");
             return null;
         }
 
-        protected IUserProfileRepository GetUserProfileRepository()
+        protected IProfileRepository GetUserProfileRepository()
         {
-            _profileRepository = _repositoryFactory.Create<IUserProfileRepository>();
+            _profileRepository = _repositoryFactory.Create<IProfileRepository>();
 
             if (_profileRepository is null)
             {
-                _logger.LogCritical("Failed to instantiate repository for interface {InterfaceName}", nameof(IUserProfileRepository));
-                throw new InvalidOperationException($"Failed to instantiate repository: {nameof(IUserProfileRepository)}");
+                _logger.LogCritical("Failed to instantiate repository for interface {InterfaceName}", nameof(IProfileRepository));
+                throw new InvalidOperationException($"Failed to instantiate repository: {nameof(IProfileRepository)}");
             }
 
             return _profileRepository;

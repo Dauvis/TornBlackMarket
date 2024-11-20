@@ -19,7 +19,12 @@ namespace TornBlackMarket.Migrations.Migrations
             Create.Table(Constants.Exchanges)
                 .WithColumn("Id").AsString(20).PrimaryKey()
                 .WithColumn("Name").AsString(100)
-                .WithColumn("Description").AsString(2000);
+                .WithColumn("Description").AsString(2000)
+                .WithColumn("Status").AsInt32().NotNullable()
+                .WithColumn("ShowBazaar").AsBoolean()
+                .WithColumn("BazaarRefresh").AsInt32()
+                .WithColumn("ShowDisplayCase").AsBoolean()
+                .WithColumn("DisplayCaseRefresh").AsInt32();
             Log.Information("Finished creating table {Table}", Constants.Exchanges);
         }
     }

@@ -11,10 +11,10 @@ namespace TornBlackMarket.Server.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        private readonly IUserProfileService _userService;
+        private readonly IProfileService _userService;
         private readonly ILogger<LoginController> _logger;
 
-        public LoginController(IUserProfileService userService, ILogger<LoginController> logger)
+        public LoginController(IProfileService userService, ILogger<LoginController> logger)
         {
             _userService = userService;
             _logger = logger;

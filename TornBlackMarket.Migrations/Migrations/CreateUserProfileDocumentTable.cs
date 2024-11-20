@@ -8,19 +8,19 @@ namespace TornBlackMarket.Migrations.Migrations
     {
         public override void Down()
         {
-            Log.Information("Removing table {Table}", Constants.UserProfileDocument);
-            Delete.Table(Constants.UserProfileDocument);
-            Log.Information("Table {Table} removed", Constants.UserProfileDocument);
+            Log.Information("Removing table {Table}", Constants.Profiles);
+            Delete.Table(Constants.Profiles);
+            Log.Information("Table {Table} removed", Constants.Profiles);
         }
 
         public override void Up()
         {
-            Log.Information("Creating table {Table}", Constants.UserProfileDocument);
-            Create.Table(Constants.UserProfileDocument)
+            Log.Information("Creating table {Table}", Constants.Profiles);
+            Create.Table(Constants.Profiles)
                 .WithColumn("Id").AsString(20).PrimaryKey()
                 .WithColumn("Name").AsString(50)
                 .WithColumn("ApiKey").AsString(50);
-            Log.Information("Table {Table} created", Constants.UserProfileDocument);
+            Log.Information("Table {Table} created", Constants.Profiles);
         }
     }
 }

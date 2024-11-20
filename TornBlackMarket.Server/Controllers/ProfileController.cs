@@ -13,11 +13,11 @@ namespace TornBlackMarket.Server.Controllers
     [Route("api/[controller]")]
     public class ProfileController : Controller
     {
-        private readonly IUserProfileService _userService;
+        private readonly IProfileService _userService;
         private readonly IMapper _mapper;
         private readonly ILogger<ProfileController> _logger;
 
-        public ProfileController(IUserProfileService userService, IMapper mapper, ILogger<ProfileController> logger)
+        public ProfileController(IProfileService userService, IMapper mapper, ILogger<ProfileController> logger)
         {
             _userService = userService;
             _mapper = mapper;
@@ -29,7 +29,7 @@ namespace TornBlackMarket.Server.Controllers
         {
             try
             {
-                if (HttpContext.Items["TornUser"] is null)
+                if (HttpContext.Items["Profile"] is null)
                 {
                     var errorResponse = new ErrorResponseDTO()
                     {
@@ -40,8 +40,8 @@ namespace TornBlackMarket.Server.Controllers
                     return Unauthorized(errorResponse);
                 }
 
-                string userId = (string)(string.IsNullOrEmpty(identifier) ? HttpContext.Items["TornUserId"] ?? "" : identifier);
-                var profile = await _userService.GetProfileAsync(userId);
+                string profileId = (string)(string.IsNullOrEmpty(identifier) ? HttpContext.Items["ProfileId"] ?? "" : identifier);
+                var profile = await _userService.GetAsync(profileId);
 
                 if (profile == null)
                 {

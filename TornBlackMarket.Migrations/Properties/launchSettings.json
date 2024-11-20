@@ -3,6 +3,10 @@
     "TornBlackMarket.Migrations": {
       "commandName": "Project",
       "commandLineArgs": "database=TornBlackMarketDev"
+    },
+    "TBM downgrade": {
+      "commandName": "Project",
+      "commandLineArgs": "database=TornBlackMarketDev downgrade=2411191247"
     }
   }
 }

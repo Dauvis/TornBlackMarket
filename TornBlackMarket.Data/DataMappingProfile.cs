@@ -8,10 +8,8 @@ namespace TornBlackMarket.Data
     {
         public DataMappingProfile()
         {
-            CreateMap<UserProfileDocumentDTO, UserProfileDocument>().ReverseMap();
-            CreateMap<UserProfileDocumentDTO, UserInfoDTO>();
-            CreateMap<UserProfileDocument, UserInfoDTO>();
-            CreateMap<ItemDocumentDTO, Models.ItemDocument>().ReverseMap();
+            CreateMap<ProfileDocumentDTO, ProfileDocument>().ReverseMap();
+            CreateMap<ItemDocumentDTO, ItemDocument>().ReverseMap();
         }
     }
 }

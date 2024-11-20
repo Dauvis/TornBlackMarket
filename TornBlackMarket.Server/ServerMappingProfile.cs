@@ -9,8 +9,7 @@ namespace TornBlackMarket.Server
     {
         public ServerMappingProfile()
         {
-            CreateMap<UserProfileDocumentDTO, TbmProfileDTO>();
-            CreateMap<UserInfoDTO, TbmUserDTO>();
+            CreateMap<ProfileDocumentDTO, TbmProfileDTO>();
         }
     }
 }

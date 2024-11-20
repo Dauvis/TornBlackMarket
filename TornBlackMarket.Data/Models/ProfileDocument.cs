@@ -1,11 +1,14 @@
-﻿using TornBlackMarket.Common.Enums;
+﻿using Dapper.Contrib.Extensions;
 
-namespace TornBlackMarket.Common.DTO.Domain
+namespace TornBlackMarket.Data.Models
 {
-    public class UserProfileDocumentDTO
+    [Table("Profiles")]
+    public class ProfileDocument
     {
+        [ExplicitKey]
         public string Id { get; set; } = "";
         public string ApiKey { get; set; } = "";
         public string Name { get; set; } = "";
+
     }
 }

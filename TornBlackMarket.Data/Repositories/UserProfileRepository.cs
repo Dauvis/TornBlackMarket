@@ -15,71 +15,64 @@ using Dapper.Contrib.Extensions;
 namespace TornBlackMarket.Data.Repositories
 {
     [DataStoreRepository("Main")]
-    public class UserProfileRepository : DataStoreRepository<UserProfileRepository>, IUserProfileRepository
+    public class UserProfileRepository : DataStoreRepository<UserProfileRepository>, IProfileRepository
     {
         public UserProfileRepository(SqlConnection _database, ILogger<UserProfileRepository> logger, IServiceProvider serviceProvider, IMapper mapper) 
             : base(_database,logger, serviceProvider, mapper)
         {
         }
 
-        public async Task<UserProfileDocumentDTO?> CreateAsync(UserInfoDTO userInfoDto, string apiKey)
+        public async Task<ProfileDocumentDTO?> CreateAsync(ProfileDocumentDTO profileDto, string apiKey)
         {
             try
             {
-                var document = new UserProfileDocument()
+                var document = new ProfileDocument()
                 {
-                    Id = userInfoDto.Id,
-                    Name = userInfoDto.Name,
-                    ApiKey = apiKey
+                    Id = profileDto.Id,
+                    Name = profileDto.Name,
+                    ApiKey = apiKey,                    
                 };
 
-                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(UserProfileDocument), JsonSerializer.Serialize(document));
-                var ret = await Connection.InsertAsync<UserProfileDocument>(document);
+                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(ProfileDocument), JsonSerializer.Serialize(document));
+                var ret = await Connection.InsertAsync<ProfileDocument>(document);
 
-                return await GetAsync(userInfoDto.Id);
+                return await GetAsync(profileDto.Id);
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed to create {TableName} record: {Message}", nameof(UserProfileDocument), e.Message);
+                Logger.LogError("Failed to create {TableName} record: {Message}", nameof(ProfileDocument), e.Message);
                 return null;
             }
         }
 
-        public async Task<UserProfileDocumentDTO?> GetAsync(string userId)
+        public async Task<ProfileDocumentDTO?> GetAsync(string profileId)
         {
             try
             {
-                Logger.LogDebug("Fetching {TableName} for {UserId}", nameof(UserProfileDocument), userId);
-                var profile = await Connection.GetAsync<UserProfileDocument>(userId);
-                return Mapper.Map<UserProfileDocumentDTO>(profile);
+                Logger.LogDebug("Fetching {TableName} for {ProfileId}", nameof(ProfileDocument), profileId);
+                var profile = await Connection.GetAsync<ProfileDocument>(profileId);
+                return Mapper.Map<ProfileDocumentDTO>(profile);
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed to fetch {TableName} record: {Message}", nameof(UserProfileDocument), e.Message);
+                Logger.LogError("Failed to fetch {TableName} record: {Message}", nameof(ProfileDocument), e.Message);
                 return null;
             }
         }
 
-        public async Task<UserInfoDTO?> GetUserAsync(string userId)
-        {
-            Logger.LogDebug("Fetching {TableName} for {UserId}", nameof(UserProfileDocument), userId);
-            var profile = await Connection.GetAsync<UserProfileDocument>(userId);
-            return Mapper.Map<UserInfoDTO>(profile);
-        }
-
-        public async Task<bool> UpdateAsync(UserProfileDocumentDTO profileDto)
+        public async Task<bool> UpdateAsync(ProfileDocumentDTO profileDto)
         {
             try
             {
-                var document = Mapper.Map<UserProfileDocument>(profileDto);
-                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(UserProfileDocument), JsonSerializer.Serialize(document));
-                var ret = await Connection.UpdateAsync<UserProfileDocument>(document);
+                var document = Mapper.Map<ProfileDocument>(profileDto);
+                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(ProfileDocument), JsonSerializer.Serialize(document));
+                var ret = await Connection.UpdateAsync<ProfileDocument>(document);
 
                 return ret;
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed to update {TableName} record: {Message}", nameof(UserProfileDocument), e.Message);
+                Logger.LogError("Failed to update {TableName} record: {Message}", nameof(ProfileDocument), e.Message);
                 return false;
             }
         }

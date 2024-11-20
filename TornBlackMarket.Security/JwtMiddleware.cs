@@ -9,9 +9,9 @@ namespace TornBlackMarket.Security
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<JwtMiddleware> _logger;
-        private readonly IUserProfileService _userService;
+        private readonly IProfileService _userService;
 
-        public JwtMiddleware(RequestDelegate next, ILogger<JwtMiddleware> logger, IUserProfileService userService)
+        public JwtMiddleware(RequestDelegate next, ILogger<JwtMiddleware> logger, IProfileService userService)
         {
             _next = next;
             _logger = logger;
@@ -24,19 +24,19 @@ namespace TornBlackMarket.Security
 
             try
             {
-                var userId = tokenUtil.ValidateToken(token);
-                context.Items["TornUserId"] = userId;
+                var profileId = tokenUtil.ValidateToken(token);
+                context.Items["ProfileId"] = profileId;
 
-                if (userId != null)
+                if (profileId != null)
                 {
                     // Attach the user to the context.
-                    context.Items["TornUser"] = await _userService.GetAsync(userId);
+                    context.Items["Profile"] = await _userService.GetAsync(profileId);
                 }
             }
             catch (SecurityTokenException ste)
             {
                 _logger.LogError("Security token error: {Message}", ste.Message);
-                context.Items["TornUserId"] = "";
+                context.Items["ProfileId"] = "";
             }
 
             await _next(context);

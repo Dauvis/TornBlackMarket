@@ -9,7 +9,7 @@ namespace TornBlackMarket.Logic
         public static IServiceCollection AddLogicServices(this IServiceCollection services)
         {
             // Add any services specific to the logic layer here
-            services.AddSingleton<IUserProfileService, UserProfileService>();
+            services.AddSingleton<IProfileService, UserProfileService>();
             services.AddSingleton<IItemService, ItemService>();
             services.AddHttpClient<ITornApiService, TornApiService>();
 

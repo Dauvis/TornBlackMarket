@@ -7,13 +7,13 @@ using TornBlackMarket.Common.DTO.External;
 
 namespace TornBlackMarket.Logic.Services
 {
-    public class UserProfileService: IUserProfileService
+    public class UserProfileService: IProfileService
     {
         private readonly ITornBlackMarketTokenUtil _tornBlackMarketTokenUtil;
         private readonly ITornApiKeyUtil _tornApiKeyTokenUtil;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IMapper _mapper;
-        private IUserProfileRepository? _userProfileRepository;
+        private IProfileRepository? _userProfileRepository;
 
         public UserProfileService(ITornBlackMarketTokenUtil tornBlackMarketTokenUtil, ITornApiKeyUtil tornApiKeyTokenUtil, 
             IRepositoryFactory repositoryFactory, IMapper mapper) 
@@ -24,10 +24,10 @@ namespace TornBlackMarket.Logic.Services
             _mapper = mapper;
         }
 
-        protected IUserProfileRepository GetUserProfileRepository()
+        protected IProfileRepository GetUserProfileRepository()
         {
-            _userProfileRepository ??= _repositoryFactory.Create<IUserProfileRepository>()
-                    ?? throw new InvalidOperationException($"Failed to instantiate repository: {nameof(IUserProfileRepository)}");
+            _userProfileRepository ??= _repositoryFactory.Create<IProfileRepository>()
+                    ?? throw new InvalidOperationException($"Failed to instantiate repository: {nameof(IProfileRepository)}");
 
             return _userProfileRepository;
         }
@@ -53,8 +53,8 @@ namespace TornBlackMarket.Logic.Services
                     return new AuthenticationResponseDTO()
                     {
                         WebToken = jwt,
-                        UserId = profileDto.Id,
-                        UserName = profileDto.Name
+                        PlayerId = profileDto.Id,
+                        PlayerName = profileDto.Name
                     };
                 }
             }
@@ -68,7 +68,7 @@ namespace TornBlackMarket.Logic.Services
             }
         }
 
-        private static ClaimsPrincipal CreateClaimsPrincipal(UserProfileDocumentDTO profileDto)
+        private static ClaimsPrincipal CreateClaimsPrincipal(ProfileDocumentDTO profileDto)
         {
             List<Claim> claims = [];
             claims.Add(new(ClaimTypes.NameIdentifier, profileDto.Id));
@@ -80,20 +80,12 @@ namespace TornBlackMarket.Logic.Services
             return new ClaimsPrincipal(identity);
         }
 
-        public async Task<UserInfoDTO?> GetAsync(string userId)
+        public async Task<ProfileDocumentDTO?> GetAsync(string profileId)
         {
             var userRepository = GetUserProfileRepository();
-            var userInfo = await userRepository.GetUserAsync(userId);
+            var profile = await userRepository.GetAsync(profileId);
 
-            return _mapper.Map<UserInfoDTO?>(userInfo);
-        }
-
-        public async Task<UserProfileDocumentDTO?> GetProfileAsync(string userId)
-        {
-            var userRepository = GetUserProfileRepository();
-            var profile = await userRepository.GetAsync(userId);
-
-            return _mapper.Map<UserProfileDocumentDTO?>(profile);
+            return _mapper.Map<ProfileDocumentDTO?>(profile);
         }
     }
 }
