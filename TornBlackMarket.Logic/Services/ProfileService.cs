@@ -7,7 +7,7 @@ using TornBlackMarket.Common.DTO.External;
 
 namespace TornBlackMarket.Logic.Services
 {
-    public class UserProfileService: IProfileService
+    public class ProfileService: IProfileService
     {
         private readonly ITornBlackMarketTokenUtil _tornBlackMarketTokenUtil;
         private readonly ITornApiKeyUtil _tornApiKeyTokenUtil;
@@ -15,7 +15,7 @@ namespace TornBlackMarket.Logic.Services
         private readonly IMapper _mapper;
         private IProfileRepository? _userProfileRepository;
 
-        public UserProfileService(ITornBlackMarketTokenUtil tornBlackMarketTokenUtil, ITornApiKeyUtil tornApiKeyTokenUtil, 
+        public ProfileService(ITornBlackMarketTokenUtil tornBlackMarketTokenUtil, ITornApiKeyUtil tornApiKeyTokenUtil, 
             IRepositoryFactory repositoryFactory, IMapper mapper) 
         {
             _tornBlackMarketTokenUtil = tornBlackMarketTokenUtil;
@@ -72,7 +72,7 @@ namespace TornBlackMarket.Logic.Services
         {
             List<Claim> claims = [];
             claims.Add(new(ClaimTypes.NameIdentifier, profileDto.Id));
-            claims.Add(new(ClaimTypes.Name, profileDto.Name));
+            claims.Add(new(ClaimTypes.Name, profileDto.Name));            
 
             // TODO: Add user roles as claims, if any
 
@@ -86,6 +86,20 @@ namespace TornBlackMarket.Logic.Services
             var profile = await userRepository.GetAsync(profileId);
 
             return _mapper.Map<ProfileDocumentDTO?>(profile);
+        }
+
+        public async Task<bool> InvalidateTokensAsync(string profileId)
+        {
+            var repository = GetUserProfileRepository();
+            var profile = await repository.GetAsync(profileId);
+
+            if (profile is not null)
+            {
+                profile.TokenInvalidDateTime = DateTimeOffset.Now;
+                return await repository.UpdateAsync(profile);
+            }
+
+            return false;
         }
     }
 }

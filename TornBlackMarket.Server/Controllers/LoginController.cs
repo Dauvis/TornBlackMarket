@@ -11,12 +11,12 @@ namespace TornBlackMarket.Server.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
-        private readonly IProfileService _userService;
+        private readonly IProfileService _profileService;
         private readonly ILogger<LoginController> _logger;
 
-        public LoginController(IProfileService userService, ILogger<LoginController> logger)
+        public LoginController(IProfileService profileService, ILogger<LoginController> logger)
         {
-            _userService = userService;
+            _profileService = profileService;
             _logger = logger;
         }
 
@@ -25,7 +25,7 @@ namespace TornBlackMarket.Server.Controllers
         {
             try
             {
-                var response = await _userService.AuthenticateAsync(request);
+                var response = await _profileService.AuthenticateAsync(request);
 
                 if (response.ErrorCode == ErrorCodesType.None)
                 {
@@ -53,6 +53,39 @@ namespace TornBlackMarket.Server.Controllers
             catch (Exception e)
             {
                 _logger.LogError("{Exception} while attempting to authenticate user: {Message}", e.GetType().Name, e.Message);
+                throw;
+            }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> InvalidateTokensAsync()
+        {
+            try
+            {
+                if (HttpContext.Items["Profile"] is null)
+                {
+                    var errorResponse = new ErrorResponseDTO()
+                    {
+                        ErrorCode = ErrorCodesType.NotAuthenticated,
+                        ErrorMessage = "User is not authenticated"
+                    };
+
+                    return Unauthorized(errorResponse);
+                }
+
+                string profileId = (string?)HttpContext.Items["ProfileId"] ?? "";
+                
+                if (await _profileService.InvalidateTokensAsync(profileId))
+                {
+                    return new NoContentResult();
+                }
+
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("{Exception} while attempting to log out user: {Message}", e.GetType().Name, e.Message);
                 throw;
             }
         }

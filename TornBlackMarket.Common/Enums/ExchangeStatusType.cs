@@ -5,7 +5,6 @@
         Inactive = 0,
         Active = 1,
         Paused = 2,
-        Suspended = 3,
-        Banned = 4
+        Suspended = 3
     }
 }

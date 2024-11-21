@@ -4,7 +4,7 @@ using Serilog;
 namespace TornBlackMarket.Migrations.Migrations
 {
     [Migration(2411191247, "Add fields to UserProfileDocument for bazaar support")]
-    public class AlterProfileDocumentForContact : Migration
+    public class Migration_2411191247_AlterProfileDocumentForContact : Migration
     {
         public override void Down()
         {

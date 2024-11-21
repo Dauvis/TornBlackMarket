@@ -4,7 +4,7 @@ using Serilog;
 namespace TornBlackMarket.Migrations.Migrations
 {
     [Migration(2411161040, "Create UserProfileDocumentTable")]
-    public class CreateUserProfileDocumentTable : Migration
+    public class Migration_2411161040_CreateUserProfileDocumentTable : Migration
     {
         public override void Down()
         {

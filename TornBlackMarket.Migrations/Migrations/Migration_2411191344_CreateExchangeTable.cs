@@ -4,7 +4,7 @@ using Serilog;
 namespace TornBlackMarket.Migrations.Migrations
 {
     [Migration(2411191344, "Create Exchange table")]
-    public class CreateExchangeTable : Migration
+    public class Migration_2411191344_CreateExchangeTable : Migration
     {
         public override void Down()
         {
