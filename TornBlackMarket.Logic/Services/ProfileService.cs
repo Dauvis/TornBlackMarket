@@ -24,7 +24,7 @@ namespace TornBlackMarket.Logic.Services
             _mapper = mapper;
         }
 
-        protected IProfileRepository GetUserProfileRepository()
+        protected IProfileRepository GetProfileRepository()
         {
             _userProfileRepository ??= _repositoryFactory.Create<IProfileRepository>()
                     ?? throw new InvalidOperationException($"Failed to instantiate repository: {nameof(IProfileRepository)}");
@@ -82,7 +82,7 @@ namespace TornBlackMarket.Logic.Services
 
         public async Task<ProfileDocumentDTO?> GetAsync(string profileId)
         {
-            var userRepository = GetUserProfileRepository();
+            var userRepository = GetProfileRepository();
             var profile = await userRepository.GetAsync(profileId);
 
             return _mapper.Map<ProfileDocumentDTO?>(profile);
@@ -90,7 +90,7 @@ namespace TornBlackMarket.Logic.Services
 
         public async Task<bool> InvalidateTokensAsync(string profileId)
         {
-            var repository = GetUserProfileRepository();
+            var repository = GetProfileRepository();
             var profile = await repository.GetAsync(profileId);
 
             if (profile is not null)

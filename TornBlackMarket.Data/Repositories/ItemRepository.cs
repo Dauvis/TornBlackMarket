@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using TornBlackMarket.Common.DTO.Domain;
@@ -14,8 +15,9 @@ namespace TornBlackMarket.Data.Repositories
     [DataStoreRepository("Main")]
     public class ItemRepository : DataStoreRepository<ItemRepository>, IItemRepository
     {
-        public ItemRepository(SqlConnection database, ILogger<ItemRepository> logger, IServiceProvider serviceProvider, IMapper mapper) : 
-            base(database, logger, serviceProvider, mapper)
+        public ItemRepository(SqlConnection database, ILogger<ItemRepository> logger, IServiceProvider serviceProvider, 
+            IMapper mapper, IConfiguration configuration) : 
+            base(database, logger, serviceProvider, mapper, configuration)
         {
         }
 

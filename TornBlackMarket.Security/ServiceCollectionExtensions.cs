@@ -11,6 +11,7 @@ namespace TornBlackMarket.Security
             // Add any services specific to the security layer here
             services.AddSingleton<ITornBlackMarketTokenUtil, TornBlackMarketTokenUtil>();
             services.AddSingleton<ITornApiKeyUtil, TornApiKeyUtil>();
+            services.AddSingleton<IEncryptionUtil, EncryptionUtil>();
 
             return services;
         }

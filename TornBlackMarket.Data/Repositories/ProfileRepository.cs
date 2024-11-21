@@ -4,33 +4,40 @@ using TornBlackMarket.Common.Interfaces;
 using TornBlackMarket.Data.Abstraction;
 using TornBlackMarket.Data.Attributes;
 using TornBlackMarket.Data.Models;
-using System.Net;
 using Microsoft.Data.SqlClient;
 using TornBlackMarket.Common.DTO.Domain;
-using Dapper;
-using static Dapper.SqlMapper;
 using System.Text.Json;
 using Dapper.Contrib.Extensions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TornBlackMarket.Data.Repositories
 {
     [DataStoreRepository("Main")]
-    public class UserProfileRepository : DataStoreRepository<UserProfileRepository>, IProfileRepository
+    public class ProfileRepository : DataStoreRepository<ProfileRepository>, IProfileRepository
     {
-        public UserProfileRepository(SqlConnection _database, ILogger<UserProfileRepository> logger, IServiceProvider serviceProvider, IMapper mapper) 
-            : base(_database,logger, serviceProvider, mapper)
+        private readonly IEncryptionUtil _encryptionUtil;
+
+        public ProfileRepository(SqlConnection _database, ILogger<ProfileRepository> logger, IServiceProvider serviceProvider, 
+            IMapper mapper, IConfiguration configuration) 
+            : base(_database,logger, serviceProvider, mapper, configuration)
         {
+            _encryptionUtil = serviceProvider.GetRequiredService<IEncryptionUtil>();
         }
 
         public async Task<ProfileDocumentDTO?> CreateAsync(ProfileDocumentDTO profileDto, string apiKey)
         {
             try
             {
+                byte[] vector = _encryptionUtil.GenerateVector(16);
+                string encryptedKey = _encryptionUtil.Encrypt(apiKey, vector);
+
                 var document = new ProfileDocument()
                 {
                     Id = profileDto.Id,
                     Name = profileDto.Name,
-                    ApiKey = apiKey,                    
+                    ApiKey = encryptedKey,
+                    ApiKeyVI = vector
                 };
 
                 Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(ProfileDocument), JsonSerializer.Serialize(document));
@@ -60,10 +67,19 @@ namespace TornBlackMarket.Data.Repositories
             }
         }
 
-        public async Task<bool> UpdateAsync(ProfileDocumentDTO profileDto)
+        public async Task<bool> UpdateAsync(ProfileDocumentDTO profileDto, string newApiKey = "")
         {
             try
             {
+                if (!string.IsNullOrEmpty(newApiKey))
+                {
+                    byte[] vector = _encryptionUtil.GenerateVector(16);
+                    string encryptedKey = _encryptionUtil.Encrypt(newApiKey, vector);
+
+                    profileDto.ApiKey = encryptedKey;
+                    profileDto.ApiKeyVI = vector;
+                }
+
                 var document = Mapper.Map<ProfileDocument>(profileDto);
                 Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(ProfileDocument), JsonSerializer.Serialize(document));
                 var ret = await Connection.UpdateAsync<ProfileDocument>(document);

@@ -13,16 +13,18 @@ namespace TornBlackMarket.Security
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly ITornApiService _tornApiService;
         private readonly ILogger<TornApiKeyUtil> _logger;
+        private readonly IEncryptionUtil _encryptionUtil;
         private IProfileRepository? _profileRepository;
 
         public TornApiKeyUtil(IConfiguration configuration, IMapper mapper, IRepositoryFactory repositoryFactory, 
-            ITornApiService tornApiService, ILogger<TornApiKeyUtil> logger)
+            ITornApiService tornApiService, ILogger<TornApiKeyUtil> logger, IEncryptionUtil encryptionUtil)
         {
             _configuration = configuration;
             _mapper = mapper;
             _repositoryFactory = repositoryFactory;
             _tornApiService = tornApiService;
             _logger = logger;
+            _encryptionUtil = encryptionUtil;
         }
 
         public async Task<ProfileDocumentDTO?> ProfileDocumentForApiKeyAsync(string? apiKey)
@@ -62,11 +64,15 @@ namespace TornBlackMarket.Security
                 }
 
                 // name or ApiKey changed, update the profile
-                if (profile is not null && (profile.Name != userBasic.Name || profile.ApiKey != apiKey))
+                if (profile is not null)
                 {
-                    profile.Name = userBasic.Name ?? profile.Name;
-                    profile.ApiKey = apiKey;
-                    await repository.UpdateAsync(profile);
+                    string encryptedCheck = _encryptionUtil.Encrypt(apiKey, profile.ApiKeyVI);
+
+                    if (profile.Name != userBasic.Name || profile.ApiKey != encryptedCheck)
+                    {
+                        profile.Name = userBasic.Name ?? profile.Name;
+                        await repository.UpdateAsync(profile, apiKey);
+                    }
                 }
 
                 return _mapper.Map<ProfileDocumentDTO>(profile);

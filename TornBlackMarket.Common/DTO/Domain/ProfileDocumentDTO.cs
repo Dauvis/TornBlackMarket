@@ -11,5 +11,6 @@ namespace TornBlackMarket.Common.DTO.Domain
         public string Web { get; set; } = "";
         public string Discord { get; set; } = "";
         public DateTimeOffset TokenInvalidDateTime { get; set; } = DateTimeOffset.MinValue;
+        public byte[] ApiKeyVI { get; set; } = [];
     }
 }

@@ -20,7 +20,7 @@ namespace TornBlackMarket.Security
         public TornBlackMarketTokenUtil(IConfiguration configuration, ILogger<TornBlackMarketTokenUtil> logger)
         {
             _logger = logger;
-            _secretKey = configuration["TORN_SECRET_KEY"] ?? throw new ArgumentException("JWT secret key has not been set", nameof(configuration));
+            _secretKey = configuration["TBM_SECRET_KEY"] ?? throw new ArgumentException("JWT secret key has not been set", nameof(configuration));
             _validIssuer = configuration["Jwt:ValidIssuer"] ?? throw new ArgumentException("JWT valid issuer has not been set", nameof(configuration));
             _validAudience = configuration["Jwt:ValidAudience"] ?? throw new ArgumentException("JWT valid audience has not been set", nameof(configuration));
 

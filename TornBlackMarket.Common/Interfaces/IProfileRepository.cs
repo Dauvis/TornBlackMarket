@@ -6,6 +6,6 @@ namespace TornBlackMarket.Common.Interfaces
     {
         Task<ProfileDocumentDTO?> CreateAsync(ProfileDocumentDTO profileDto, string apiKey);
         Task<ProfileDocumentDTO?> GetAsync(string profileId);
-        Task<bool> UpdateAsync(ProfileDocumentDTO profile);
+        Task<bool> UpdateAsync(ProfileDocumentDTO profile, string newApiKey = "");
     }
 }

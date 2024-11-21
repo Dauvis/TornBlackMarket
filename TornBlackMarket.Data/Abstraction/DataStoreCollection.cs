@@ -66,7 +66,7 @@ namespace TornBlackMarket.Data.Abstraction
             }
 
             var repositoryLogger = _serviceProvider.GetRequiredService<ILogger<T>>();
-            object[] ctorArgs = [_database, repositoryLogger, _serviceProvider, _mapper];
+            object[] ctorArgs = [_database, repositoryLogger, _serviceProvider, _mapper, _configuration];
             var repository = (DataStoreRepository<T>?)Activator.CreateInstance(repositoryType, ctorArgs);
 
             if (repository is null)
