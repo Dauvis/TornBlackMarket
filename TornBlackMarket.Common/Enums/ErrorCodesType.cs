@@ -9,6 +9,7 @@
         NotAuthenticated,
         InvalidProfile,
         UserNotFound,
-        ProfileUpdateFailure
+        ProfileUpdateFailure,
+        ExchangeUpdateFailure
     }
 }

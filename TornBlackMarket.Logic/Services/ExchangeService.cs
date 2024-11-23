@@ -1,4 +1,5 @@
-﻿using TornBlackMarket.Common.DTO.Domain;
+﻿using Microsoft.Extensions.Logging;
+using TornBlackMarket.Common.DTO.Domain;
 using TornBlackMarket.Common.Interfaces;
 using TornBlackMarket.Data.Repositories;
 
@@ -7,11 +8,13 @@ namespace TornBlackMarket.Logic.Services
     public class ExchangeService: IExchangeService
     {
         private readonly IRepositoryFactory _repositoryFactory;
+        private readonly ILogger<ExchangeService> _logger;
         private IExchangeRepository? _exchangeRepository;
 
-        public ExchangeService(IRepositoryFactory repositoryFactory)
+        public ExchangeService(IRepositoryFactory repositoryFactory, ILogger<ExchangeService> logger)
         {
             _repositoryFactory = repositoryFactory;
+            _logger = logger;
         }
 
         protected IExchangeRepository GetExchangeRepository()
@@ -32,6 +35,18 @@ namespace TornBlackMarket.Logic.Services
         {
             var repository = GetExchangeRepository();
             return await repository.GetAsync(exchangeId);
+        }
+
+        public async Task<bool> UpdateAsync(string exchangeId, ExchangeDocumentDTO exchangeDto)
+        {
+            if (exchangeId != exchangeDto.Id)
+            {
+                _logger.LogCritical("Illegal attempt to update exchange {ProfileId} by {UserProfileId}", exchangeDto.Id, exchangeId);
+                return false;
+            }
+
+            var repository = GetExchangeRepository();
+            return await repository.UpdateAsync(exchangeDto);
         }
     }
 }

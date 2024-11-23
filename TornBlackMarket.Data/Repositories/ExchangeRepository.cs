@@ -54,5 +54,21 @@ namespace TornBlackMarket.Data.Repositories
             }
         }
 
+        public async Task<bool> UpdateAsync(ExchangeDocumentDTO exchangeDto)
+        {
+            try
+            {
+                var document = Mapper.Map<ExchangeDocument>(exchangeDto);
+                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(ExchangeDocumentDTO), JsonSerializer.Serialize(document));
+                var ret = await Connection.UpdateAsync<ExchangeDocument>(document);
+
+                return ret;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError("Failed to update {TableName} record: {Message}", nameof(ExchangeDocumentDTO), e.Message);
+                return false;
+            }
+        }
     }
 }

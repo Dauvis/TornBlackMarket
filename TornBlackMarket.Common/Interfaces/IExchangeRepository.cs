@@ -6,5 +6,6 @@ namespace TornBlackMarket.Common.Interfaces
     {
         Task<ExchangeDocumentDTO?> CreateAsync(ExchangeDocumentDTO exchangeDto);
         Task<ExchangeDocumentDTO?> GetAsync(string exchangeId);
+        Task<bool> UpdateAsync(ExchangeDocumentDTO exchangeDto);
     }
 }

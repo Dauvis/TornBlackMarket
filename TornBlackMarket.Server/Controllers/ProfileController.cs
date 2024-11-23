@@ -6,6 +6,7 @@ using TornBlackMarket.Common.DTO.External;
 using TornBlackMarket.Common.Enums;
 using TornBlackMarket.Common.Interfaces;
 using TornBlackMarket.Security;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TornBlackMarket.Server.Controllers
 {
@@ -103,6 +104,58 @@ namespace TornBlackMarket.Server.Controllers
                 };
 
                 return BadRequest(updateErrorResponse);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("{Exception} while attempting to update profile {ProfileId}: {Message}", e.GetType().Name,
+                    HttpContext.Items["ProfileId"], e.Message);
+                throw;
+            }
+        }
+
+        [HttpPut("full")]
+        public async Task<IActionResult> UpdateFullAsync([FromBody] TbmFullProfileDTO fullProfile)
+        {
+            try
+            {
+                if (!AuthenticationUtil.CheckAuthentication(HttpContext, out var errorResponse))
+                {
+                    return Unauthorized(errorResponse);
+                }
+
+
+                var profileDto = _mapper.Map<ProfileDocumentDTO>(fullProfile.BasicProfile);
+                string profileId = (string?)HttpContext.Items["ProfileId"] ?? "";
+                bool result = await _profileService.UpdateAsync(profileId, profileDto);
+
+                if (!result)
+                {
+                    var updateErrorResponse = new ErrorResponseDTO()
+                    {
+                        ErrorCode = ErrorCodesType.ProfileUpdateFailure,
+                        ErrorMessage = (profileId == profileDto.Id) ? $"Failed to update profile {profileDto.Id}" :
+                            $"Illegal attempt to update profile {profileDto.Id}"
+                    };
+
+                    return BadRequest(updateErrorResponse);
+                }
+
+                var exchangeDto = _mapper.Map<ExchangeDocumentDTO>(fullProfile.Exchange);
+                result = await _exchangeService.UpdateAsync(profileId, exchangeDto);
+
+                if (!result)
+                {
+                    var updateErrorResponse = new ErrorResponseDTO()
+                    {
+                        ErrorCode = ErrorCodesType.ExchangeUpdateFailure,
+                        ErrorMessage = (profileId == exchangeDto.Id) ? $"Failed to update exchange {exchangeDto.Id}" :
+                            $"Illegal attempt to update exchange {exchangeDto.Id}"
+                    };
+
+                    return BadRequest(updateErrorResponse);
+                }
+
+                return NoContent();
             }
             catch (Exception e)
             {
