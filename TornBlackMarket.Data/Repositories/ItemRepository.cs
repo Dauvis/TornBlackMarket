@@ -81,7 +81,7 @@ namespace TornBlackMarket.Data.Repositories
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed to update {TableName} record: {Message}", nameof(ProfileDocument), e.Message);
+                Logger.LogError("Failed to update {TableName} record: {Message}", nameof(ProfileDocumentBase), e.Message);
                 return false;
             }
 

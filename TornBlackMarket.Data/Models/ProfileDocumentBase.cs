@@ -3,7 +3,7 @@
 namespace TornBlackMarket.Data.Models
 {
     [Table("Profiles")]
-    public class ProfileDocument
+    public class ProfileDocumentBase
     {
         [ExplicitKey]
         public string Id { get; set; } = "";
@@ -12,8 +12,5 @@ namespace TornBlackMarket.Data.Models
         public string Web { get; set; } = "";
         public string Discord { get; set; } = "";
         public DateTimeOffset TokenInvalidDateTime { get; set; } = DateTimeOffset.MinValue;
-        public string ApiKey { get; set; } = "";
-        public byte[] ApiKeyVI { get; set; } = [];
-
     }
 }

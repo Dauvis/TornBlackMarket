@@ -4,26 +4,30 @@ using TornBlackMarket.Common.Interfaces;
 using System.Security.Claims;
 using TornBlackMarket.Common.DTO.Domain;
 using TornBlackMarket.Common.DTO.External;
+using System.Security;
+using Microsoft.Extensions.Logging;
 
 namespace TornBlackMarket.Logic.Services
 {
-    public class ProfileService: IProfileService
+    public class ProfileService : IProfileService
     {
         private readonly ITornBlackMarketTokenUtil _tornBlackMarketTokenUtil;
         private readonly ITornApiKeyUtil _tornApiKeyTokenUtil;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IMapper _mapper;
         private readonly IExchangeService _exchangeService;
+        private readonly ILogger<ProfileService> _logger;
         private IProfileRepository? _userProfileRepository;
 
-        public ProfileService(ITornBlackMarketTokenUtil tornBlackMarketTokenUtil, ITornApiKeyUtil tornApiKeyTokenUtil, 
-            IRepositoryFactory repositoryFactory, IMapper mapper, IExchangeService exchangeService) 
+        public ProfileService(ITornBlackMarketTokenUtil tornBlackMarketTokenUtil, ITornApiKeyUtil tornApiKeyTokenUtil,
+            IRepositoryFactory repositoryFactory, IMapper mapper, IExchangeService exchangeService, ILogger<ProfileService> logger) 
         {
             _tornBlackMarketTokenUtil = tornBlackMarketTokenUtil;
             _tornApiKeyTokenUtil = tornApiKeyTokenUtil;
             _repositoryFactory = repositoryFactory;
             _mapper = mapper;
             _exchangeService = exchangeService;
+            _logger = logger;
         }
 
         protected IProfileRepository GetProfileRepository()
@@ -117,6 +121,18 @@ namespace TornBlackMarket.Logic.Services
             }
 
             return false;
+        }
+
+        public async Task<bool> UpdateAsync(string profileId, ProfileDocumentDTO profileDto)
+        {
+            if (profileId != profileDto.Id)
+            {
+                _logger.LogCritical("Illegal attempt to update {ProfileId} by {UserProfileId}", profileDto.Id, profileId);
+                return false;
+            }
+
+            var repository = GetProfileRepository();
+            return await repository.UpdateAsync(profileDto);
         }
     }
 }

@@ -8,6 +8,7 @@
         UnknownError,
         NotAuthenticated,
         InvalidProfile,
-        UserNotFound
+        UserNotFound,
+        ProfileUpdateFailure
     }
 }

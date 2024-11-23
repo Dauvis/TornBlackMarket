@@ -8,8 +8,8 @@ namespace TornBlackMarket.Server
     {
         public ServerMappingProfile()
         {
-            CreateMap<ProfileDocumentDTO, TbmProfileDTO>();
-            CreateMap<ExchangeDocumentDTO, TbmExchangeDTO>();
+            CreateMap<ProfileDocumentDTO, TbmProfileDTO>().ReverseMap();
+            CreateMap<ExchangeDocumentDTO, TbmExchangeDTO>().ReverseMap();
         }
     }
 }

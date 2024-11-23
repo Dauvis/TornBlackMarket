@@ -40,14 +40,14 @@ namespace TornBlackMarket.Data.Repositories
                     ApiKeyVI = vector
                 };
 
-                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(ProfileDocument), JsonSerializer.Serialize(document));
+                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(ProfileDocumentBase), JsonSerializer.Serialize(document));
                 var ret = await Connection.InsertAsync<ProfileDocument>(document);
 
                 return await GetAsync(profileDto.Id);
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed to create {TableName} record: {Message}", nameof(ProfileDocument), e.Message);
+                Logger.LogError("Failed to create {TableName} record: {Message}", nameof(ProfileDocumentBase), e.Message);
                 return null;
             }
         }
@@ -78,17 +78,23 @@ namespace TornBlackMarket.Data.Repositories
 
                     profileDto.ApiKey = encryptedKey;
                     profileDto.ApiKeyVI = vector;
+
+                    var document = Mapper.Map<ProfileDocument>(profileDto);
+                    Logger.LogDebug("Updating {TableName} record: {SerializedData}", nameof(ProfileDocument), JsonSerializer.Serialize(document));
+                    var retBase = await Connection.UpdateAsync<ProfileDocument>(document);
+
+                    return retBase;
                 }
 
-                var document = Mapper.Map<ProfileDocument>(profileDto);
-                Logger.LogDebug("Inserting {TableName} record: {SerializedData}", nameof(ProfileDocument), JsonSerializer.Serialize(document));
-                var ret = await Connection.UpdateAsync<ProfileDocument>(document);
+                var documentBase = Mapper.Map<ProfileDocumentBase>(profileDto);
+                Logger.LogDebug("Updating {TableName} record: {SerializedData}", nameof(ProfileDocument), JsonSerializer.Serialize(documentBase));
+                var ret = await Connection.UpdateAsync<ProfileDocumentBase>(documentBase);
 
                 return ret;
             }
             catch (Exception e)
             {
-                Logger.LogError("Failed to update {TableName} record: {Message}", nameof(ProfileDocument), e.Message);
+                Logger.LogError("Failed to update {TableName} record: {Message}", nameof(ProfileDocumentBase), e.Message);
                 return false;
             }
         }

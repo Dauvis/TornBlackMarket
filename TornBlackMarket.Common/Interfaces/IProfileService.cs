@@ -8,5 +8,6 @@ namespace TornBlackMarket.Common.Interfaces
         Task<AuthenticationResponseDTO> AuthenticateAsync(AuthenticationRequestDTO request);
         Task<ProfileDocumentDTO?> GetAsync(string profileId);
         Task<bool> InvalidateTokensAsync(string profileId);
+        Task<bool> UpdateAsync(string profileId, ProfileDocumentDTO profileDto);
     }
 }
