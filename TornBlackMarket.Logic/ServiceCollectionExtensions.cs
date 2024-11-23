@@ -12,6 +12,7 @@ namespace TornBlackMarket.Logic
             services.AddSingleton<IProfileService, ProfileService>();
             services.AddSingleton<IItemService, ItemService>();
             services.AddHttpClient<ITornApiService, TornApiService>();
+            services.AddSingleton<IExchangeService, ExchangeService>();
 
             return services;
         }

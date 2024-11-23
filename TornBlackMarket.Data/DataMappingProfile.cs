@@ -10,6 +10,7 @@ namespace TornBlackMarket.Data
         {
             CreateMap<ProfileDocumentDTO, ProfileDocument>().ReverseMap();
             CreateMap<ItemDocumentDTO, ItemDocument>().ReverseMap();
+            CreateMap<ExchangeDocumentDTO, ExchangeDocument>().ReverseMap();
         }
     }
 }

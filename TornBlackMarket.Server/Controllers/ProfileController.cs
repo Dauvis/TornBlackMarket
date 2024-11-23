@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TornBlackMarket.Common.DTO.Domain;
 using TornBlackMarket.Common.DTO.External;
 using TornBlackMarket.Common.Enums;
 using TornBlackMarket.Common.Interfaces;
@@ -16,16 +15,18 @@ namespace TornBlackMarket.Server.Controllers
         private readonly IProfileService _userService;
         private readonly IMapper _mapper;
         private readonly ILogger<ProfileController> _logger;
+        private readonly IExchangeService _exchangeService;
 
-        public ProfileController(IProfileService userService, IMapper mapper, ILogger<ProfileController> logger)
+        public ProfileController(IProfileService userService, IMapper mapper, ILogger<ProfileController> logger, IExchangeService exchangeService)
         {
             _userService = userService;
             _mapper = mapper;
             _logger = logger;
+            _exchangeService = exchangeService;
         }
 
         [HttpGet("{identifier?}")]
-        public async Task<IActionResult> IndexAsync(string? identifier)
+        public async Task<IActionResult> IndexAsync(string? identifier, [FromQuery] bool full = false)
         {
             try
             {
@@ -54,9 +55,22 @@ namespace TornBlackMarket.Server.Controllers
                     return NotFound(errorResponse);
                 }
 
-                var responseDTO = _mapper.Map<TbmProfileDTO>(profile);
+                var tbmProfileDto = _mapper.Map<TbmProfileDTO>(profile);
 
-                return Ok(responseDTO);
+                if (full)
+                {
+                    var exchange = await _exchangeService.GetAsync(profileId);
+                    var tbmExchangeDto = _mapper.Map<TbmExchangeDTO>(exchange);
+                    var responseDto = new TbmFullProfileDTO()
+                    {
+                        BasicProfile = tbmProfileDto,
+                        Exchange = tbmExchangeDto
+                    };
+
+                    return Ok(responseDto);
+                }
+
+                return Ok(tbmProfileDto);
             }
             catch (Exception e)
             {

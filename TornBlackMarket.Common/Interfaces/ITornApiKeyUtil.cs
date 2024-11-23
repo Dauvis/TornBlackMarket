@@ -4,6 +4,6 @@ namespace TornBlackMarket.Common.Interfaces
 {
     public interface ITornApiKeyUtil
     {
-        Task<ProfileDocumentDTO?> ProfileDocumentForApiKeyAsync(string? apiKey);
+        Task<(ProfileDocumentDTO?, bool)> ProfileDocumentForApiKeyAsync(string? apiKey);
     }
 }

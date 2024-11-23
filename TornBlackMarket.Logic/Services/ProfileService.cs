@@ -13,15 +13,17 @@ namespace TornBlackMarket.Logic.Services
         private readonly ITornApiKeyUtil _tornApiKeyTokenUtil;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IMapper _mapper;
+        private readonly IExchangeService _exchangeService;
         private IProfileRepository? _userProfileRepository;
 
         public ProfileService(ITornBlackMarketTokenUtil tornBlackMarketTokenUtil, ITornApiKeyUtil tornApiKeyTokenUtil, 
-            IRepositoryFactory repositoryFactory, IMapper mapper) 
+            IRepositoryFactory repositoryFactory, IMapper mapper, IExchangeService exchangeService) 
         {
             _tornBlackMarketTokenUtil = tornBlackMarketTokenUtil;
             _tornApiKeyTokenUtil = tornApiKeyTokenUtil;
             _repositoryFactory = repositoryFactory;
             _mapper = mapper;
+            _exchangeService = exchangeService;
         }
 
         protected IProfileRepository GetProfileRepository()
@@ -36,7 +38,9 @@ namespace TornBlackMarket.Logic.Services
         {
             try
             {
-                var profileDto = await _tornApiKeyTokenUtil.ProfileDocumentForApiKeyAsync(request.TornApiKey);
+                ProfileDocumentDTO? profileDto = null;
+                bool isNewPlayer = false;
+                (profileDto, isNewPlayer) = await _tornApiKeyTokenUtil.ProfileDocumentForApiKeyAsync(request.TornApiKey);                
 
                 if (profileDto is null)
                 {
@@ -50,11 +54,24 @@ namespace TornBlackMarket.Logic.Services
                 {
                     var jwt = _tornBlackMarketTokenUtil.GenerateToken(CreateClaimsPrincipal(profileDto));
 
+                    if (isNewPlayer)
+                    {
+                        var exchangeDto = new ExchangeDocumentDTO()
+                        {
+                            Id = profileDto.Id,
+                            Name = $"{profileDto.Name}'s Exchange",
+                            Description = "Enter a description for your exchange"
+                        };
+
+                        await _exchangeService.CreateAsync(exchangeDto);
+                    }
+
                     return new AuthenticationResponseDTO()
                     {
                         WebToken = jwt,
                         PlayerId = profileDto.Id,
-                        PlayerName = profileDto.Name
+                        PlayerName = profileDto.Name,
+                        IsNewPlayer = isNewPlayer
                     };
                 }
             }

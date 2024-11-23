@@ -27,11 +27,11 @@ namespace TornBlackMarket.Security
             _encryptionUtil = encryptionUtil;
         }
 
-        public async Task<ProfileDocumentDTO?> ProfileDocumentForApiKeyAsync(string? apiKey)
+        public async Task<(ProfileDocumentDTO?, bool)> ProfileDocumentForApiKeyAsync(string? apiKey)
         {
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                return null;
+                return (null, false);
             }
 
             var userBasic = await _tornApiService.GetUserBasicAsync(apiKey);
@@ -39,7 +39,7 @@ namespace TornBlackMarket.Security
             if (userBasic == null)
             {
                 _logger.LogError("No response from Torn API");
-                return null;
+                return (null, false);
             }
 
             if (userBasic.Error is not null && userBasic.Error.Error.Code != 0)
@@ -51,6 +51,7 @@ namespace TornBlackMarket.Security
             {
                 var repository = GetUserProfileRepository();
                 var profile = await repository.GetAsync(userBasic.PlayerId.ToString());
+                bool isNewPlayer = false;
 
                 if (profile is null)
                 {
@@ -61,6 +62,7 @@ namespace TornBlackMarket.Security
                     };
 
                     profile = await repository.CreateAsync(newProfileDto, apiKey);
+                    isNewPlayer = true;
                 }
 
                 // name or ApiKey changed, update the profile
@@ -75,11 +77,11 @@ namespace TornBlackMarket.Security
                     }
                 }
 
-                return _mapper.Map<ProfileDocumentDTO>(profile);
+                return (_mapper.Map<ProfileDocumentDTO>(profile), isNewPlayer);
             }
 
             _logger.LogError("Torn API response lacks critical data (player_id)");
-            return null;
+            return (null, false);
         }
 
         protected IProfileRepository GetUserProfileRepository()
