@@ -15,7 +15,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TornBlackMarket.Data", "Tor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TornBlackMarket.Migrations", "TornBlackMarket.Migrations\TornBlackMarket.Migrations.csproj", "{97DC1F47-5E23-4E0A-BEA2-785611924166}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TornBlackMarket.Periodic", "TornBlackMarket.Periodic\TornBlackMarket.Periodic.csproj", "{4F201A7D-BC75-44C7-BB5D-F4A4650B8613}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TornBlackMarket.Periodic", "TornBlackMarket.Periodic\TornBlackMarket.Periodic.csproj", "{4F201A7D-BC75-44C7-BB5D-F4A4650B8613}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8065632D-7172-4D58-BBA0-983C0F573E3C}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
